@@ -1,0 +1,23 @@
+{
+  "name": "rvl",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "beautify-benchmark": "^0.2.4",
+    "benchmark": "^2.1.4",
+    "faker": "^4.1.0",
+    "lodash": "^4.17.14",
+    "lodash-fp": "^0.10.4",
+    "nodemark": "^0.3.0",
+    "ramda": "^0.26.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.0"
+  }
+}
