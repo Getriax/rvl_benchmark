@@ -12,4 +12,12 @@ const buildUser = ({
   avatar,
 })
 
-module.exports = num => new Array(num).fill(buildUser())
+module.exports = {
+  buildData: num => new Array(num).fill(0).map(buildUser),
+  sampleData: [
+    buildUser(),
+    buildUser(),
+    buildUser(),
+    buildUser(),
+  ],
+}

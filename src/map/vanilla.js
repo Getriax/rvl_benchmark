@@ -1,3 +1,3 @@
 const toEmail = (({ email }) => email)
 
-module.exports = (data) => data.map(toEmail);
+module.exports = data => data.map(toEmail)

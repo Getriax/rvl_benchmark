@@ -1,16 +1,14 @@
-const Benchmark = require('benchmark')
-const BenchLogger = require('beautify-benchmark')
-const mapAsset = require('./map')
-const executeWithTime = require('./logTime')
+const assert = require('assert')
+const benchmark = require('nodemark')
+const logTime = require('./logTime')
 
-const assets = {
-  map: mapAsset,
-}
+let asset
 
 const [_, __, assetName, ...lengths] = process.argv
-const asset = assets[assetName]
 
-if (!asset) {
+try {
+  asset = require(`./${assetName}`)
+} catch (err) {
   console.log(`Asset ${assetName} is unavailable`)
   process.exit(0)
 }
@@ -20,29 +18,54 @@ const actualLengths = lengths.length
   ? lengths
   : defaultDataLengths
 
-console.log({ actualLengths })
-
 const {
   lodash,
   ramda,
   vanilla,
   buildData,
+  sampleData,
 } = asset
 
+const printResult = (name, result) => console.log(`${name}\n${result}\n1 sample in ${result.milliseconds(5)}ms`)
+
+console.log(`Executing ${assetName}\n`)
+
+console.log(sampleData, '\n')
+
+console.log('Result samples')
+console.log('Lodash')
+const lodashSample = lodash(sampleData)
+console.log(lodashSample)
+
+console.log('Ramda')
+const ramdaSample = ramda(sampleData)
+console.log(ramdaSample)
+
+console.log('Vanilla')
+const vanillaSample = vanilla(sampleData)
+console.log(vanillaSample)
+console.log()
+
+assert.deepEqual(lodashSample, ramdaSample, 'lodash sample result is different than ramda')
+assert.deepEqual(ramdaSample, vanillaSample, 'vanilla sample result is different than ramda')
+
 actualLengths.forEach((dataLength) => {
-  const data = buildData(+dataLength)
-  const suite = new Benchmark.Suite(`RVL ${assetName}`)
+  let x
 
-  suite
-    .add(`Lodash ${dataLength}`, () => lodash(data))
-    .add(`Ramda ${dataLength}`, () => ramda(data))
-    .add(`Vanilla ${dataLength}`, () => vanilla(data))
-    .on('cycle', event => BenchLogger.add(event.target))
-    .on('complete', () => {
-      BenchLogger.log()
-    })
-    .run()
+  let data
+
+  const setup = () => {
+    data = buildData(+dataLength)
+  }
+
+  console.log(`Data length ${dataLength}`)
+  const lodashResult = benchmark(() => lodash(data), setup)
+  const ramdaResult = benchmark(() => ramda(data), setup)
+  const vanillaResult = benchmark(() => vanilla(data), setup)
+
+  printResult('Lodash', lodashResult)
+  printResult('Ramda', ramdaResult)
+  printResult('Vanilla', vanillaResult)
+
+  console.log()
 })
-
-
-// executeWithTime(type, asset[type], data)
